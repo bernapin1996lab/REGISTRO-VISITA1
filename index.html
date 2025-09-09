@@ -4,24 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario en Telegram</title>
-    <!-- Tailwind CSS CDN para un estilo moderno y responsive -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                }
-            }
-        }
-    </script>
     <style>
+        /* CSS de Tailwind incrustado */
+        /*
+        * A continuación se encuentra una versión simplificada del CSS de Tailwind para que la mini-aplicación sea autocontenida.
+        * Esto asegura que los estilos se carguen incluso sin conexión a Internet o si el CDN falla.
+        */
+        
+        /* Base y Tipografía */
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9; /* blueGray-100 */
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+            background-color: #f1f5f9;
+            padding: 1.5rem;
         }
+
+        /* Contenedor principal */
+        .max-w-md {
+            max-width: 28rem;
+        }
+        .mx-auto {
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .bg-white {
+            background-color: #fff;
+        }
+        .rounded-xl {
+            border-radius: 0.75rem;
+        }
+        .shadow-lg {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .p-6 {
+            padding: 1.5rem;
+        }
+
+        /* Encabezado y Texto */
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+        .font-bold {
+            font-weight: 700;
+        }
+        .text-gray-800 {
+            color: #1f2937;
+        }
+        .text-center {
+            text-align: center;
+        }
+        .mb-4 {
+            margin-bottom: 1rem;
+        }
+        .text-gray-600 {
+            color: #4b5563;
+        }
+        .mb-6 {
+            margin-bottom: 1.5rem;
+        }
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        /* Formulario y Botones */
+        .space-y-4 > * + * {
+            margin-top: 1rem;
+        }
+        .block {
+            display: block;
+        }
+        .w-full {
+            width: 100%;
+        }
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+        .py-2 {
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+        }
+        .border {
+            border-width: 1px;
+        }
+        .border-gray-300 {
+            border-color: #d1d5db;
+        }
+        .rounded-md {
+            border-radius: 0.375rem;
+        }
+        .shadow-sm {
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .focus\:outline-none:focus {
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+        }
+        .focus\:ring-blue-500:focus {
+            --tw-ring-color: #3b82f6;
+            box-shadow: 0 0 0 calc(2px + 0px) var(--tw-ring-color);
+        }
+        .focus\:border-blue-500:focus {
+            border-color: #3b82f6;
+        }
+        .sm\:text-sm {
+            font-size: 0.875rem;
+        }
+        .flex {
+            display: flex;
+        }
+        .justify-center {
+            justify-content: center;
+        }
+        .text-white {
+            color: #fff;
+        }
+        .bg-blue-600 {
+            background-color: #2563eb;
+        }
+        .hover\:bg-blue-700:hover {
+            background-color: #1d4ed8;
+        }
+        .focus\:ring-2:focus {
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5);
+        }
+        .focus\:ring-offset-2:focus {
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px rgba(59, 130, 246, 0.5);
+        }
+
+        /* Mensajes de estado */
+        .mt-4 {
+            margin-top: 1rem;
+        }
+        .font-medium {
+            font-weight: 500;
+        }
+        .hidden {
+            display: none;
+        }
+        .block {
+            display: block;
+        }
+        .text-green-600 {
+            color: #16a34a;
+        }
+        .text-red-600 {
+            color: #dc2626;
+        }
+        .text-yellow-600 {
+            color: #ca8a04;
+        }
+        .text-gray-600 {
+            color: #4b5563;
+        }
+
     </style>
 </head>
 <body class="p-6">
@@ -52,7 +187,7 @@
     <script>
         const form = document.getElementById('dataForm');
         const statusMessage = document.getElementById('statusMessage');
-        const webhookUrl = 'https://hook.us2.make.com/vvdxma06lmhy1r66d7egcd8d3kuef1uo'; // <-- REEMPLAZA ESTA URL CON LA TUYA
+        const webhookUrl = 'https://hook.us2.make.com/vvdxma06lmhy1r66d7egcd8d3kuef1uo'; // <-- Reemplaza esta URL con la tuya
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
