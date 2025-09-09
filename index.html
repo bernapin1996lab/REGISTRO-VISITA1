@@ -87,6 +87,8 @@
             color: #4b5563;
         }
     </style>
+    <!-- Incluir el script de la API de Telegram WebApp -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="container">
@@ -102,6 +104,9 @@
                 <label for="valor">Valor (Número)</label>
                 <input type="number" id="valor" name="valor" placeholder="123">
             </div>
+            <!-- Campo oculto para el chat_id -->
+            <input type="hidden" id="chatId" name="chatId">
+            
             <button type="submit">
                 Enviar a Make
             </button>
@@ -115,13 +120,29 @@
         const statusMessage = document.getElementById('statusMessage');
         const webhookUrl = 'https://hook.us2.make.com/vvdxma06lmhy1r66d7egcd8d3kuef1uo'; // <-- Reemplaza esta URL
 
+        // Variable para almacenar la información del usuario de Telegram
+        let telegramUser = null;
+
+        // Obtener los datos del usuario de Telegram WebApp al cargar la página
+        document.addEventListener('DOMContentLoaded', () => {
+            if (Telegram.WebApp && Telegram.WebApp.initDataUnsafe && Telegram.WebApp.initDataUnsafe.user) {
+                telegramUser = Telegram.WebApp.initDataUnsafe.user;
+                document.getElementById('chatId').value = telegramUser.id;
+            } else {
+                console.error("No se pudo obtener el chat_id de Telegram WebApp.");
+                // Asigna un valor de respaldo para depuración si no se puede obtener el ID real.
+                document.getElementById('chatId').value = "debug_user_id";
+            }
+        });
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const nombre = document.getElementById('nombre').value;
             const valor = document.getElementById('valor').value;
+            const chatId = document.getElementById('chatId').value;
 
-            if (!nombre || !valor) {
+            if (!nombre || !valor || !chatId) {
                 statusMessage.textContent = 'Por favor, completa todos los campos.';
                 statusMessage.className = 'status-message visible warning';
                 return;
@@ -130,19 +151,31 @@
             try {
                 statusMessage.textContent = 'Enviando datos...';
                 statusMessage.className = 'status-message visible info';
+                
+                // Creación del objeto JSON con toda la información
+                const payload = {
+                    nombre,
+                    valor,
+                    chatId,
+                    firstName: telegramUser ? telegramUser.first_name : '', // Nombre del usuario de Telegram
+                    lastName: telegramUser ? telegramUser.last_name : '', // Apellido del usuario de Telegram
+                };
 
                 const response = await fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ nombre, valor }),
+                    body: JSON.stringify(payload), // Envía todos los datos
                 });
 
                 if (response.ok) {
                     statusMessage.textContent = 'Datos enviados con éxito!';
                     statusMessage.className = 'status-message visible success';
                     form.reset();
+                    
+                    // Aquí es donde puedes cerrar la mini-aplicación si lo deseas
+                    // Telegram.WebApp.close();
                 } else {
                     throw new Error('Error al enviar los datos.');
                 }
