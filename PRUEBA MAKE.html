@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario en Telegram</title>
+    <!-- Tailwind CSS CDN para un estilo moderno y responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9; /* blueGray-100 */
+        }
+    </style>
+</head>
+<body class="p-6">
+    <div class="max-w-md mx-auto bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-800 text-center mb-4">Enviar Datos a Make</h1>
+        <p class="text-gray-600 text-center mb-6">Completa el formulario y los datos serán enviados a tu flujo de trabajo en Make.</p>
+        
+        <form id="dataForm" class="space-y-4">
+            <div>
+                <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre</label>
+                <input type="text" id="nombre" name="nombre" placeholder="Tu nombre"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <div>
+                <label for="valor" class="block text-sm font-medium text-gray-700">Valor (Número)</label>
+                <input type="number" id="valor" name="valor" placeholder="123"
+                    class="mt-1 block w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            </div>
+            <button type="submit"
+                class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                Enviar a Make
+            </button>
+        </form>
+        
+        <div id="statusMessage" class="mt-4 text-center text-sm font-medium hidden"></div>
+    </div>
+
+    <script>
+        const form = document.getElementById('dataForm');
+        const statusMessage = document.getElementById('statusMessage');
+        const webhookUrl = 'https://hook.us2.make.com/vvdxma06lmhy1r66d7egcd8d3kuef1uo'; // <-- REEMPLAZA ESTA URL CON LA TUYA
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const nombre = document.getElementById('nombre').value;
+            const valor = document.getElementById('valor').value;
+
+            // Simple validación
+            if (!nombre || !valor) {
+                statusMessage.textContent = 'Por favor, completa todos los campos.';
+                statusMessage.classList.remove('hidden', 'text-green-600', 'text-red-600');
+                statusMessage.classList.add('text-yellow-600', 'block');
+                return;
+            }
+
+            try {
+                // Muestra un mensaje de carga
+                statusMessage.textContent = 'Enviando datos...';
+                statusMessage.classList.remove('hidden', 'text-green-600', 'text-red-600', 'text-yellow-600');
+                statusMessage.classList.add('text-gray-600', 'block');
+
+                // Envia los datos al webhook de Make
+                const response = await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ nombre, valor }),
+                });
+
+                if (response.ok) {
+                    statusMessage.textContent = 'Datos enviados con éxito!';
+                    statusMessage.classList.remove('text-gray-600');
+                    statusMessage.classList.add('text-green-600');
+                    form.reset();
+                } else {
+                    throw new Error('Error al enviar los datos.');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                statusMessage.textContent = 'Error: No se pudieron enviar los datos.';
+                statusMessage.classList.remove('text-gray-600');
+                statusMessage.classList.add('text-red-600');
+            }
+        });
+    </script>
+</body>
+</html>
